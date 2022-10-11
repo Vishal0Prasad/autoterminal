@@ -10,12 +10,12 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:auto-terminal.helloWorld"
+    "onCommand:auto-terminal.newTerminal"
   ],
   "main": "./extension.js",
   "contributes": {
     "commands": [{
-      "command": "auto-terminal.helloWorld",
+      "command": "auto-terminal.newTerminal",
       "title": "Hello World"
     }]
   },

@@ -4,7 +4,7 @@ This is an extension for VS Code to automate terminal startup when a folder is o
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+Write a json config in the workspace that you wish to automate.
 
 For example if there is an image subfolder under your extension project workspace:
 

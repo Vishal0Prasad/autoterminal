@@ -1,7 +1,6 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-const vscode = require("vscode");
-
+import * as vscode from "vscode";
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 
@@ -10,22 +9,24 @@ let disposable = [];
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "auto-terminal" is now active!');
-	console.log(context);
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with  registerCommand
-	// The commandId parameter must match the command field in package.json
+	if (vscode.workspace.workspaceFolders !== undefined) {
+		let f = vscode.workspace.workspaceFolders[0].uri.fsPath;
+		const file = new vscode.Uri("file", "", f + "/autoterminal.json");
+		vscode.workspace.openTextDocument(file).then((document) => {
+			let text = document.getText();
+			console.log(document, text);
+		});
+	}
+
 	disposable.push(
 		vscode.commands.registerCommand("auto-terminal.newTerminal", function () {
-			// The code you place here will be executed every time your command is executed
-
-			// Display a message box to the user
 			vscode.window.createTerminal();
-			//vscode.window.showInformationMessage("Hello World from Auto Terminal!");
 		})
 	);
+
+	//  disposable.push(
+	//  	vscode.commands.registerCommand("")
+	// )
 
 	disposable.forEach(() => {
 		context.subscriptions.push(disposable);

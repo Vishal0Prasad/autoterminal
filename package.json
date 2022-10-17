@@ -18,6 +18,10 @@
 			{
 				"command": "auto-terminal.createTerminal",
 				"title": "New Terminal"
+			},
+			{
+				"command": "auto-terminal.splitTerminal",
+				"title": "Split Terminal"
 			}
 		]
 	},

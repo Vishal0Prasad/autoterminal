@@ -8,66 +8,42 @@ let disposable = [];
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
-	if (vscode.workspace.workspaceFolders !== undefined) {
+	let autoTerminalConfig = null;
+	console.log("I'm alive!");
+	async function readAutoTerminalConfig() {
 		let f = vscode.workspace.workspaceFolders[0].uri.fsPath;
-		const file = new vscode.Uri("file", "", f + "/autoterminal.json");
-		vscode.workspace.openTextDocument(file).then((document) => {
-			let text = document.getText();
-			//console.log(document, text);
+		let file = new vscode.Uri("file", "", f + "/autoterminal.json");
+		const promise1 = await vscode.workspace
+			.openTextDocument(file)
+			.then((document) => {
+				return document.getText();
+			});
+		return promise1;
+	}
+
+	if (vscode.workspace.workspaceFolders !== undefined) {
+		autoTerminalConfig = readAutoTerminalConfig();
+		autoTerminalConfig.then((value) => {
+			console.log(value);
 		});
 	}
 
 	disposable.push(
 		vscode.commands.registerCommand(
-			"auto-terminal.newTerminal",
-			async function () {
-				// async function createNewTerminal() {
-				// 	const newTerminal =
-				// 	//await newTerminal.show(true);
-				// 	return newTerminal;
-				// }
-				//vscode.window.terminals
-				// const newTerminal = new Promise(async (resolve, reject) => {
-				// 	const newTerminal = vscode.window.createTerminal("Podium");
-				// 	console.log(newTerminal);
-				// 	newTerminal.show();
-				// 	return newTerminal;
-				// });
-				// console.log(newTerminal);
-
-				function showTerminal(terminal) {
-					terminal.show(true);
-					//return undefined;
-				}
-
-				const newTerminal = vscode.window.createTerminal("Podium");
-				// await new Promise((resolve, reject) => {
-				// 	showTerminal(newTerminal);
-				// });
-				setTimeout(() => {
-					showTerminal(newTerminal);
-				}, 0);
-				// .then((value) => {
-				// 	console.log(value);
-				// });
-
-				//await terminal.show(true);
-				// newTerminal.then((terminal) => {
-				// 	return;
-				// });
-				//.then((terminal) => {
-				//console.log(newTerminal);
-				//await newTerminal.resolve()
-				// await newTerminal.then((terminal) => {
-				// 	terminal.show(true);
-				// });
-				//await newTerminal.show(true);
-				//});
-				//await newTerminal.show(true)
-				//setTimeout(() => {
-				vscode.commands.executeCommand("workbench.action.terminal.split");
-				//}, 1000);
-				//console.log(newTerminal.creationOptions.location);
+			"auto-terminal.createTerminal",
+			function () {
+				const term = vscode.window.createTerminal("Podium");
+				console.log(term);
+				autoTerminalConfig
+					.then((value) => {
+						//console.log(value);
+						term.show();
+						term.sendText(`cd ..`);
+						return term;
+					})
+					.then((term) => {
+						vscode.commands.executeCommand("workbench.action.terminal.split");
+					});
 			}
 		)
 	);

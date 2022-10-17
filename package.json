@@ -10,14 +10,14 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:auto-terminal.newTerminal"
+		"workspaceContains:./autoterminal.json"
 	],
 	"main": "./extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "auto-terminal.newTerminal",
-				"title": "Hello World"
+				"command": "auto-terminal.createTerminal",
+				"title": "New Terminal"
 			}
 		]
 	},

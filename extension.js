@@ -7,8 +7,8 @@ let disposable = [];
 /**
  * @param {vscode.ExtensionContext} context
  */
-function activate(context) {
-	let autoTerminalConfig = null;
+async function activate(context) {
+	let termConfig = null;
 	console.log("I'm alive!");
 	async function readAutoTerminalConfig() {
 		let f = vscode.workspace.workspaceFolders[0].uri.fsPath;
@@ -22,38 +22,42 @@ function activate(context) {
 	}
 
 	if (vscode.workspace.workspaceFolders !== undefined) {
-		autoTerminalConfig = readAutoTerminalConfig();
-		autoTerminalConfig.then((value) => {
-			console.log(value);
-		});
+		termConfig = await readAutoTerminalConfig();
 	}
-
-	disposable.push(
-		vscode.commands.registerCommand(
-			"auto-terminal.createTerminal",
-			function () {
-				const term = vscode.window.createTerminal("Podium");
-				console.log(term);
-				autoTerminalConfig
-					.then((value) => {
-						//console.log(value);
-						term.show();
-						term.sendText(`cd ..`);
-						return term;
-					})
-					.then((term) => {
+	const parsedConfig = JSON.parse(termConfig).commandConfig;
+	disposable = parsedConfig.map((exeConfig) => {
+		switch (exeConfig.command) {
+			case "auto-terminal.splitTerminal":
+				return vscode.commands.registerCommand(
+					"auto-terminal.splitTerminal",
+					function () {
+						console.log("Split Terminal");
 						vscode.commands.executeCommand("workbench.action.terminal.split");
-					});
-			}
-		)
-	);
+					}
+				);
+			case "auto-terminal.createTerminal":
+				return vscode.commands.registerCommand(
+					"auto-terminal.createTerminal",
+					function () {
+						const term = vscode.window.createTerminal("Podium");
+						console.log("New Terminal", term);
+						term.show();
+						term.sendText(`${exeConfig.sendText}`);
+					}
+				);
+			default:
+				return null;
+		}
+	});
 
-	//  disposable.push(
-	//  	vscode.commands.registerCommand("")
-	// )
+	console.log("DISPOSABLE", disposable);
 
-	disposable.forEach(() => {
-		context.subscriptions.push(disposable);
+	disposable.forEach((executable) => {
+		context.subscriptions.push(executable);
+	});
+
+	parsedConfig.forEach((config) => {
+		vscode.commands.executeCommand(`${config.command}`);
 	});
 }
 

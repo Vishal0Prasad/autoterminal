@@ -27,7 +27,7 @@ async function activate(context) {
 	const parsedConfig = JSON.parse(termConfig).commandConfig;
 	disposable = parsedConfig.map((exeConfig) => {
 		switch (exeConfig.command) {
-			case "Split Terminal":
+			case "auto-terminal.splitTerminal":
 				return vscode.commands.registerCommand(
 					"auto-terminal.splitTerminal",
 					function () {
@@ -35,7 +35,7 @@ async function activate(context) {
 						vscode.commands.executeCommand("workbench.action.terminal.split");
 					}
 				);
-			case "New Terminal":
+			case "auto-terminal.createTerminal":
 				return vscode.commands.registerCommand(
 					"auto-terminal.createTerminal",
 					function () {
@@ -49,6 +49,8 @@ async function activate(context) {
 				return null;
 		}
 	});
+
+	console.log("DISPOSABLE", disposable);
 
 	disposable.forEach((executable) => {
 		context.subscriptions.push(executable);
